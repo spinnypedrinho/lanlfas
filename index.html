@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Laboratório da Bobina Tesla ⚡</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0a0015, #1a001a, #000520);
+      font-family: 'Courier New', monospace;
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Partículas animadas no fundo */
+    .particle {
+      position: absolute;
+      background: #00faff;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.7;
+      animation: float 6s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+      25% { transform: translateY(-20px) rotate(90deg); opacity: 1; }
+      50% { transform: translateY(-40px) rotate(180deg); opacity: 0.5; }
+      75% { transform: translateY(-20px) rotate(270deg); opacity: 1; }
+    }
+
+    /* Interface de controle */
+    .control-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #00faff;
+      box-shadow: 0 0 20px rgba(0, 250, 255, 0.3);
+      z-index: 10;
+    }
+
+    .control-panel h3 {
+      margin: 0 0 15px 0;
+      color: #00faff;
+      text-align: center;
+      text-shadow: 0 0 10px #00faff;
+    }
+
+    .control-btn {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background: linear-gradient(45deg, #1a1a2e, #16213e);
+      border: 2px solid #00faff;
+      border-radius: 8px;
+      color: #00faff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .control-btn:hover {
+      background: linear-gradient(45deg, #00faff, #0066ff);
+      color: #000;
+      box-shadow: 0 0 15px #00faff;
+    }
+
+    /* Título */
+    h1 {
+      text-align: center;
+      font-size: 3.5em;
+      margin: 20px 0;
+      background: linear-gradient(45deg, #00faff, #ff00fa, #faff00);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbow 3s ease-in-out infinite;
+      text-shadow: 0 0 30px rgba(0, 250, 255, 0.5);
+      z-index: 2;
+      position: relative;
+    }
+
+    @keyframes rainbow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    p {
+      text-align: center;
+      margin-top: -10px;
+      font-size: 1.4em;
+      color: #aaf;
+      z-index: 2;
+      position: relative;
+      text-shadow: 0 0 5px #aaf;
+    }
+
+    /* Bobina Tesla */
+    .tesla {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    .tesla.charging {
+      animation: vibrate 0.1s infinite;
+    }
+
+    @keyframes vibrate {
+      0%, 100% { transform: translateX(-50%) translateY(0px); }
+      25% { transform: translateX(-48px) translateY(-1px); }
+      50% { transform: translateX(-52px) translateY(1px); }
+      75% { transform: translateX(-48px) translateY(-1px); }
+    }
+
+    .tesla .top {
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle at 30% 30%, #e6e6fa, #9370db, #4b0082);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(147, 112, 219, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.3);
+      border: 4px solid #ddd;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tesla .top::before {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      width: 30%;
+      height: 30%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+      border-radius: 50%;
+      animation: shine 2s infinite ease-in-out;
+    }
+
+    @keyframes shine {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    .tesla .coil {
+      width: 50px;
+      height: 250px;
+      background: repeating-linear-gradient(
+        to bottom,
+        #cd7f32 0px,
+        #cd7f32 8px,
+        #8b4513 8px,
+        #8b4513 16px
+      );
+      border-radius: 25px;
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(205, 127, 50, 0.3);
+      margin-top: -15px;
+      position: relative;
+    }
+
+    .tesla .coil::after {
+      content: '';
+      position: absolute;
+      left: 10%;
+      top: 0;
+      width: 80%;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      border-radius: 20px;
+    }
+
+    .tesla .base {
+      width: 150px;
+      height: 50px;
+      background: linear-gradient(to bottom, #666, #222, #111);
+      border-radius: 15px;
+      margin-top: 15px;
+      box-shadow: 
+        inset 0 0 15px rgba(0, 0, 0, 0.8),
+        0 8px 20px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .tesla .base::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      right: 20px;
+      height: 8px;
+      background: linear-gradient(to right, #ff0000, #ffff00, #00ff00);
+      border-radius: 4px;
+      opacity: 0.8;
+    }
+
+    /* Efeitos de raios */
+    .lightning {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 200px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .lightning.active {
+      opacity: 1;
+      animation: lightning-flash 0.2s infinite;
+    }
+
+    @keyframes lightning-flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .lightning-bolt {
+      position: absolute;
+      background: linear-gradient(45deg, #00faff, #ffffff, #aaaaff);
+      border-radius: 2px;
+      box-shadow: 0 0 20px #00faff, 0 0 40px #00faff;
+      animation: bolt-dance 0.1s infinite;
+    }
+
+    @keyframes bolt-dance {
+      0% { transform: rotate(0deg) translateX(0px); }
+      25% { transform: rotate(2deg) translateX(1px); }
+      50% { transform: rotate(-1deg) translateX(-1px); }
+      75% { transform: rotate(1deg) translateX(1px); }
+      100% { transform: rotate(0deg) translateX(0px); }
+    }
+
+    /* Lâmpadas */
+    .lamp {
+      position: absolute;
+      width: 70px;
+      height: 140px;
+      cursor: grab;
+      z-index: 3;
+      transition: all 0.3s ease;
+    }
+
+    .lamp:active {
+      cursor: grabbing;
+      transform: scale(1.05);
+    }
+
+    .lamp .bulb {
+      width: 70px;
+      height: 90px;
+      background: radial-gradient(circle at 30% 30%, #444, #111);
+      border-radius: 50% 50% 40% 40%;
+      border-bottom: 5px solid #333;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lamp .bulb::after {
+      content: "";
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 35px;
+      background: #000;
+      border-radius: 4px;
+    }
+
+    .lamp .base {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
+      background: linear-gradient(to bottom, #bbb, #666, #333);
+      border-radius: 8px;
+      border: 3px solid #444;
+      margin-top: -8px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Estados das lâmpadas */
+    .lamp.on .bulb {
+      background: radial-gradient(circle at 30% 30%, #fffccc, #ffcc00, #ff9900);
+      box-shadow: 
+        0 0 80px 30px rgba(255, 255, 153, 0.8),
+        0 0 120px 40px rgba(255, 204, 0, 0.4);
+      border-bottom: 5px solid #ffda66;
+    }
+
+    .lamp.neon.on .bulb {
+      background: radial-gradient(circle at 30% 30%, #ff69b4, #ff1493, #dc143c);
+      box-shadow: 
+        0 0 80px 30px rgba(255, 105, 180, 0.8),
+        0 0 120px 40px rgba(255, 20, 147, 0.4);
+      border-bottom: 5px solid #ff69b4;
+    }
+
+    .lamp.blue.on .bulb {
+      background: radial-gradient(circle at 30% 30%, #87ceeb, #4169e1, #0000ff);
+      box-shadow: 
+        0 0 80px 30px rgba(135, 206, 235, 0.8),
+        0 0 120px 40px rgba(65, 105, 225, 0.4);
+      border-bottom: 5px solid #87ceeb;
+    }
+
+    /* Medidor de energia */
+    .energy-meter {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 200px;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00faff;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .energy-bar {
+      width: 100%;
+      height: 20px;
+      background: #222;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .energy-fill {
+      height: 100%;
+      background: linear-gradient(to right, #00ff00, #ffff00, #ff0000);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .energy-label {
+      color: #00faff;
+      font-size: 12px;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    /* Contador de score */
+    .score {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 2em;
+      color: #00faff;
+      text-shadow: 0 0 10px #00faff;
+    }
+  </style>
+</head>
+<body>
+  <h1>LABORATÓRIO TESLA ⚡</h1>
+  <p>Arraste as lâmpadas até a bobina e experimente diferentes modos!</p>
+
+  <div class="score">Score: <span id="score">0</span></div>
+
+  <div class="control-panel">
+    <h3>🎛️ CONTROLES</h3>
+    <button class="control-btn" onclick="addLamp()">💡 Adicionar Lâmpada</button>
+    <button class="control-btn" onclick="changeMode()">🌈 Modo: <span id="mode">Normal</span></button>
+    <button class="control-btn" onclick="resetLab()">🔄 Reset</button>
+  </div>
+
+  <div class="tesla" id="tesla">
+    <div class="lightning" id="lightning"></div>
+    <div class="top"></div>
+    <div class="coil"></div>
+    <div class="base"></div>
+  </div>
+
+  <div class="energy-meter">
+    <div class="energy-bar">
+      <div class="energy-fill" id="energyFill"></div>
+    </div>
+    <div class="energy-label">ENERGIA TESLA</div>
+  </div>
+
+  <div class="lamp" id="lamp1" style="top: 100px; left: 100px;">
+    <div class="bulb"></div>
+    <div class="base"></div>
+  </div>
+
+  <script>
+    // Variáveis globais
+    let lampCount = 1;
+    let score = 0;
+    let currentMode = 0;
+    const modes = ['normal', 'neon', 'blue'];
+    const modeNames = ['Normal', 'Neon', 'Azul'];
+    let activeLamps = 0;
+    let isCharging = false;
+    let lamps = [];
+
+    // Proteção contra cópia
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('dragstart', e => e.preventDefault());
+
+    // Criar partículas de fundo
+    function createParticles() {
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.top = Math.random() * 100 + 'vh';
+        particle.style.width = particle.style.height = Math.random() * 4 + 2 + 'px';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        document.body.appendChild(particle);
+      }
+    }
+
+    // Criar raios
+    function createLightning() {
+      const lightning = document.getElementById('lightning');
+      lightning.innerHTML = '';
+      
+      for (let i = 0; i < 8; i++) {
+        const bolt = document.createElement('div');
+        bolt.className = 'lightning-bolt';
+        const angle = (i * 45) + Math.random() * 20 - 10;
+        const length = 60 + Math.random() * 40;
+        
+        bolt.style.width = '3px';
+        bolt.style.height = length + 'px';
+        bolt.style.left = '50%';
+        bolt.style.top = '50%';
+        bolt.style.transformOrigin = 'top center';
+        bolt.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+        bolt.style.animationDelay = Math.random() * 0.1 + 's';
+        
+        lightning.appendChild(bolt);
+      }
+    }
+
+    // Tornar elemento arrastável
+    function makeDraggable(element) {
+      let isDragging = false;
+      let offsetX, offsetY;
+
+      element.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+        element.style.zIndex = 1000;
+        e.preventDefault();
+      });
+
+      document.addEventListener("mouseup", () => {
+        if (isDragging) {
+          isDragging = false;
+          element.style.zIndex = 3;
+        }
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+          element.style.left = (e.clientX - offsetX) + "px";
+          element.style.top = (e.clientY - offsetY) + "px";
+          checkProximity(element);
+          e.preventDefault();
+        }
+      });
+
+      // Touch events para dispositivos móveis
+      element.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        const touch = e.touches[0];
+        const rect = element.getBoundingClientRect();
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
+        element.style.zIndex = 1000;
+        e.preventDefault();
+      });
+
+      document.addEventListener("touchend", () => {
+        if (isDragging) {
+          isDragging = false;
+          element.style.zIndex = 3;
+        }
+      });
+
+      document.addEventListener("touchmove", (e) => {
+        if (isDragging) {
+          const touch = e.touches[0];
+          element.style.left = (touch.clientX - offsetX) + "px";
+          element.style.top = (touch.clientY - offsetY) + "px";
+          checkProximity(element);
+          e.preventDefault();
+        }
+      });
+
+      lamps.push(element);
+    }
+
+    // Verificar proximidade com a bobina
+    function checkProximity(lamp) {
+      const lampRect = lamp.getBoundingClientRect();
+      const tesla = document.getElementById('tesla');
+      const teslaRect = tesla.getBoundingClientRect();
+
+      const dx = (lampRect.left + lampRect.width / 2) - (teslaRect.left + teslaRect.width / 2);
+      const dy = (lampRect.top + lampRect.height / 2) - (teslaRect.top + teslaRect.height / 2);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      const activationDistance = 120;
+      const wasOn = lamp.classList.contains('on');
+
+      if (distance < activationDistance) {
+        if (!wasOn) {
+          lamp.classList.add('on');
+          activeLamps++;
+          score += 10;
+          playZapSound();
+        }
+      } else {
+        if (wasOn) {
+          lamp.classList.remove('on');
+          activeLamps--;
+        }
+      }
+      
+      updateDisplay();
+    }
+
+    // Atualizar display
+    function updateDisplay() {
+      document.getElementById('score').textContent = score;
+      const energyPercent = Math.min((activeLamps * 25), 100);
+      document.getElementById('energyFill').style.width = energyPercent + '%';
+      
+      const tesla = document.getElementById('tesla');
+      const lightning = document.getElementById('lightning');
+      
+      if (activeLamps > 0) {
+        if (!isCharging) {
+          tesla.classList.add('charging');
+          lightning.classList.add('active');
+          isCharging = true;
+        }
+      } else {
+        tesla.classList.remove('charging');
+        lightning.classList.remove('active');
+        isCharging = false;
+      }
+    }
+
+    // Adicionar nova lâmpada
+    function addLamp() {
+      lampCount++;
+      const newLamp = document.createElement('div');
+      newLamp.className = 'lamp';
+      newLamp.id = `lamp${lampCount}`;
+      newLamp.style.top = (50 + Math.random() * 200) + 'px';
+      newLamp.style.left = (50 + Math.random() * 300) + 'px';
+      
+      // Aplicar modo atual
+      if (modes[currentMode] !== 'normal') {
+        newLamp.classList.add(modes[currentMode]);
+      }
+      
+      newLamp.innerHTML = `
+        <div class="bulb"></div>
+        <div class="base"></div>
+      `;
+      
+      document.body.appendChild(newLamp);
+      makeDraggable(newLamp);
+      
+      score += 5;
+      updateDisplay();
+    }
+
+    // Mudar modo das lâmpadas
+    function changeMode() {
+      currentMode = (currentMode + 1) % modes.length;
+      document.getElementById('mode').textContent = modeNames[currentMode];
+      
+      // Aplicar novo modo a todas as lâmpadas
+      lamps.forEach(lamp => {
+        const wasOn = lamp.classList.contains('on');
+        
+        // Remover modos anteriores
+        lamp.classList.remove('neon', 'blue');
+        
+        // Aplicar novo modo se não for normal
+        if (modes[currentMode] !== 'normal') {
+          lamp.classList.add(modes[currentMode]);
+        }
+        
+        // Manter estado ligado/desligado
+        if (wasOn) {
+          lamp.classList.add('on');
+        }
+      });
+    }
+
+    // Reset do laboratório
+    function resetLab() {
+      // Remover todas as lâmpadas exceto a primeira
+      const lampsToRemove = document.querySelectorAll('.lamp:not(#lamp1)');
+      lampsToRemove.forEach(lamp => lamp.remove());
+      
+      // Reset da primeira lâmpada
+      const lamp1 = document.getElementById('lamp1');
+      lamp1.style.top = '100px';
+      lamp1.style.left = '100px';
+      lamp1.className = 'lamp';
+      
+      // Aplicar modo atual
+      if (modes[currentMode] !== 'normal') {
+        lamp1.classList.add(modes[currentMode]);
+      }
+      
+      // Reset das variáveis
+      lampCount = 1;
+      score = 0;
+      activeLamps = 0;
+      lamps = [lamp1];
+      
+      updateDisplay();
+    }
+
+    // Som de raio
+    function playZapSound() {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+      } catch (e) {
+        // Falha silenciosamente se Web Audio não estiver disponível
+      }
+    }
+
+    // Inicialização
+    function init() {
+      createParticles();
+      createLightning();
+      const lamp1 = document.getElementById('lamp1');
+      makeDraggable(lamp1);
+      lamps = [lamp1];
+      updateDisplay();
+    }
+
+    // Iniciar quando a página carregar
+    init();
+  </script>
+</body>
+</html>
