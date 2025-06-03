@@ -7,7 +7,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #8C1F28, #591C21,#044040,#D92525);
+            background: linear-gradient(135deg,  #667eea, #764ba2);
             min-height: 100vh;
             padding: 20px;
             color: #333;
@@ -23,7 +23,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg,#0FC2C0,#0CABA8,#008F8C,#015958,#023535);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 30px;
             text-align: center;
