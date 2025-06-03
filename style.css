@@ -1,5 +1,4 @@
-
-        * {
+* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -7,7 +6,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg,  #667eea, #764ba2);
+            background: linear-gradient(135deg,   #0F5FA6, #0A8CBF, #04B2D9,#05DBF2);
             min-height: 100vh;
             padding: 20px;
             color: #333;
@@ -23,7 +22,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0F5FA6, #0A8CBF, #04B2D9,#05DBF2);
             color: white;
             padding: 30px;
             text-align: center;
@@ -70,7 +69,7 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg,  #0F5FA6, #0A8CBF, #04B2D9,#05DBF2);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -170,7 +169,7 @@
 
         .investment-card.selected {
             border-color: #667eea;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg,  #0F5FA6, #0A8CBF, #04B2D9,#05DBF2);
             color: white;
         }
 
@@ -212,13 +211,7 @@
             font-weight: bold;
             color: #667eea;
             margin: 20px;
-            animation: roll 0.5s ease-in-out;
-        }
-
-        @keyframes roll {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(180deg); }
-            100% { transform: rotate(360deg); }
+            cursor: pointer;
         }
 
         .event-modal {
